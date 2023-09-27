@@ -1,5 +1,4 @@
 # screen_main.py
-from luma.core.render import canvas
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
