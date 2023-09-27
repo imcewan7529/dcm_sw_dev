@@ -3,7 +3,7 @@ To bringup a new RPI for testing, run the following command: <br>
 curl -s https://raw.githubusercontent.com/imcewan7529/dcm_sw_dev/main/setup.sh | sudo bash
 
 Note to developers:
-This script assumes that your software component has a specific file structure. An example using the ADC manager app:
+This script assumes that your software component has a specific file structure. An example using the ADC manager app: <br>
 /repo_root/ <br>
 |-- /ADC_manager/ <br>
 |&emsp;&emsp;|-- /systemd/ <br>
