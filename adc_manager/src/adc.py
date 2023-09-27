@@ -28,7 +28,7 @@ while(True):
     print("Date: %s | Voltage: %.4f"% ( now ,(value/1023.0 * 3.3)))
 
     # Delaysample
-    time.sleep(1)
+    time.sleep(.1)
 
 log_file.close()
 
