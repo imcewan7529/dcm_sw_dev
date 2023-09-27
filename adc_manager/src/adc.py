@@ -5,7 +5,7 @@ import time
 
 
 adc = MCP3008()
-filename = 'log_test.json'              # Name of log fie
+filename = '../test_logs/log_test.json'              # Name of log fie
 log_file = open(filename, 'r+') 
 file_data = json.load(log_file)
 
