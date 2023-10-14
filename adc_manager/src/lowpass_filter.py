@@ -1,7 +1,7 @@
 
 
 class Lowpass_Filter(object):
-    K = 3
+    K = 6
     N = int(1 << K)
     def __init__ (self):
         self.sum = 0
