@@ -1,7 +1,7 @@
 
 
 class Lowpass_Filter(object):
-    K = 6
+    K = 3
     N = int(1 << K)
     def __init__ (self):
         self.sum = 0
@@ -14,7 +14,7 @@ class Lowpass_Filter(object):
         self.sum += self.buffer[self.buffer_ptr]
         self.buffer_ptr += 1
         self.buffer_ptr %= Lowpass_Filter.N 
-        #print(int(self.sum >> Lowpass_Filter.K))
-        return (int(self.sum) >> Lowpass_Filter.K)
+        #print( self.sum /8)
+        return (self.sum/8)
 
 

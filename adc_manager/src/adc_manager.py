@@ -22,6 +22,7 @@ def write_json(new_data, write_file):
 def main():
     p1 = Lowpass_Filter()
     t0 = time.time()
+    
     while(True):
         value = adc.read(channel = 0)/1023.0 * 5
     
@@ -30,7 +31,7 @@ def main():
         #Formats data to json
         fields = {"Date/Time": now, "Voltage": value}
         #write_json(fields, log_file) 
-        print("Date: %s | Voltage: %.4f"%  (now , filterd_value) )
+        print("Date: %s | Voltage: %.4f"%  (now , filtered_value) )
         # Delaysample
         time.sleep(-(time.time() - t0)% .1)        
 
