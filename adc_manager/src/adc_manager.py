@@ -26,10 +26,10 @@ def main():
     while(True):
         value = adc.read(channel = 0)/1023.0 * 5
     
-        now = datetime.now()
+        now = datetime.utcnow()
         filtered_value = p1.Lowpass_Filter(value)
         #Formats data to json
-        fields = {"Date/Time": now, "Voltage": value}
+        fields = {"Date/Time": now, "Voltage": filtered_value}
         #write_json(fields, log_file) 
         print("Date: %s | Voltage: %.4f"%  (now , filtered_value) )
         # Delaysample
