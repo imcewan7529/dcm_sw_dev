@@ -5,7 +5,7 @@ import os
 
 # ************************************************************************************
 # Global variables
-data_received = {"Date/Time": "10/30", "Flow_Rate": 50}
+data_received = None
 
 # Read data from queue
 # Callback function
