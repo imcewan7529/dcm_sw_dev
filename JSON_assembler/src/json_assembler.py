@@ -1,12 +1,11 @@
 import pika
 import json
-import time
-import datetime
+from datetime import datetime
 import os
 
 # ************************************************************************************
 # Global variables
-data_received = None
+data_received = {"Date/Time": "10/30", "Flow_Rate": 50}
 
 # Read data from queue
 # Callback function
@@ -28,42 +27,43 @@ channel.queue_declare(queue=queue_name)
 # Consume from queue
 channel.basic_consume(queue=queue_name, auto_ack=True, on_message_callback=callback)
 
-while True:
-    try:
-        print("Started consuming messages")
-        channel.start_consuming()
+try:
+    print("Started consuming messages")
+    channel.start_consuming()
 
-        # Put data into python dictionary
-        try:
-            data_dict = json.loads(data_received)
-            print(f"Data as a dictionary: {data_dict}")
+except KeyboardInterrupt:
+    channel.stop_consuming()
+    connection.close()
 
-        except json.JSONDecodeError as e:
-            print("Failed to parse as JSON")
+# ************************************************************************************
+# Put data into python dictionary
+try:
+    data_json = json.dumps(data_received)
+    data_dict = json.loads(data_json)
+    print(f"Data as a dictionary: {data_dict}")
 
-        else:
-            print("Successfully parsed as JSON")
+except json.JSONDecodeError as e:
+    print("Failed to parse as JSON")
 
-        # Write as a file
-        try:
-            while True:
-                current_time = datetime.datetime.now().strftime("%Y/%m/%d_%H:%M:%S")
-                new_file = os.path.join('/tmp/', f'{current_time}.json')
+else:
+    print("Successfully parsed as JSON")
 
-                with open(new_file, 'w') as json_file:
-                    json.dump(data_dict, json_file)
+# Write as a file
+try:
+    current_time = datetime.now().strftime("%m_%d_%Y_%H:%M:%S")
+    new_file = os.path.join('/tmp/', f'{current_time}.json')
 
-        except FileNotFoundError:
-            print("File not found")
+    with open(new_file, 'w') as json_file:
+        json.dump(data_received, json_file)
 
-        except PermissionError:
-            print("Does not have permission to access file")
+except PermissionError:
+    print("Does not have permission to access file")
 
-        except Exception as e:
-            print("Error writing to JSON file")
+except FileNotFoundError:
+    print("File not found")
 
-        time.sleep(30)
+except Exception as e:
+    print(f"Error writing to JSON file: {str(e)}")
 
-    except KeyboardInterrupt:
-        channel.stop_consuming()
-        connection.close()
+else:
+    print("Successfully written JSON file")
