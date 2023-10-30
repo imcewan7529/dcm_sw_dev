@@ -22,7 +22,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 
 # Connect to queue
-queue_name = 'ADCname'
+queue_name = 'DCM_Main_Exchange'
 channel.queue_declare(queue=queue_name)
 
 # Consume from queue
