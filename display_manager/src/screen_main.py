@@ -1,12 +1,17 @@
 # screen_main.py
+from luma.core.render import canvas
 from PIL import ImageFont
 from PIL import Image
 from PIL import ImageDraw
 from time import sleep
 
+DEFAULT_FUEL_LEVEL = 7000
+
 
 # Main display function
 def display(device, fuel_level, internet_status, module_status, boot_flag): 
+    # Get fuel level in terms of percent
+    fuel_level = round((fuel_level/DEFAULT_FUEL_LEVEL)* 100) 
     # Set max brightness
     device.contrast(255)
 
