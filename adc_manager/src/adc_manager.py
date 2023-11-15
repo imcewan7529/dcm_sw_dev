@@ -45,12 +45,18 @@ def main():
         now = datetime.now(timezone.utc)
         filtered_value = p1.Lowpass_Filter(value)
         flow_rate = 2*filtered_value
-        #Formats data to json
-        fields = {"Date/Time": now, "Flow_Rate": flow_rate}
-        #write_json(fields, log_file) 
+
+        # Formats data to JSON
+        fields = {
+            "Date/Time": now.isoformat(),
+            "Flow_Rate": flow_rate
+        }
+        json_data = json.dumps(fields)
+
+        # Publish JSON data
         channel.basic_publish(exchange=queue_name,
-                      routing_key='',
-                      body= str(fields))
+                            routing_key='',
+                            body=json_data)
         print("Date: %s | Voltage: %.4f"%  (now , filtered_value) )
         # Delaysample
         time.sleep(-(time.time() - t0)% .1)        

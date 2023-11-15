@@ -3,6 +3,7 @@
 # Update and install essential tools
 sudo apt update
 sudo apt install -y git python3-pip rabbitmq-server
+sudo apt-get install libopenjp2-7-dev -y
 
 # Start and set up RabbitMQ
 sudo systemctl start rabbitmq-server

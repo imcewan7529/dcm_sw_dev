@@ -3,13 +3,16 @@
 from PIL import Image
 from PIL import ImageFont
 from luma.core.render import canvas
+import os
+import sys
 
 def display(device):
     # ... your display logic and interactions for the main screen ...
     device.contrast(255) # Set contrast to max
 
     # Load the HNOI logo icon
-    image_path = "hnoi_logo_icon.png"
+    script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+    image_path = os.path.join(script_directory, 'hnoi_logo_icon.png')
     image = Image.open(image_path)
 
     # Load fonts

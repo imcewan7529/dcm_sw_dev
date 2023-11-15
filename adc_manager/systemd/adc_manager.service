@@ -9,5 +9,5 @@ ExecStart=/user/bin/python3 /usr/bin/adc_manager/adc_manager.py
 Restart=always
 User=pi
 
-[install]
-Wantedby=multi-user.target
+[Install]
+WantedBy=multi-user.target

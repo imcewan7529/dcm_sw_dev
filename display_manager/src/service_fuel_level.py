@@ -3,13 +3,16 @@ import threading
 import pika
 import json
 from functools import partial
+import os
+import sys
 
 # Global variables
 FLOW_RATE_DATA_POINTS = 0
 FLOW_RATE_AVERAGE = 0
 FUEL_LEVEL_MAX_LITRES = 100
 # Store fuel remaining in a file, stored in liters
-FUEL_REMAINING_FILENAME = 'fuel_remaining.txt'
+script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
+FUEL_REMAINING_FILENAME = os.path.join(script_directory, 'fuel_remaining.txt')
 # File I/O lock
 FUEL_REMAINING_FILE_LOCK = threading.Lock()
 
