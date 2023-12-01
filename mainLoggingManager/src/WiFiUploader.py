@@ -27,7 +27,7 @@ with open(latest_json, "r")as file:
 print(f"Data from latest json: {payload}")
 
 # Making HTTP POST request
-web_url = ""
+web_url = "https://hnoi.netlify.app/"
 
 try:
     send_data = requests.post(web_url, data=payload)
