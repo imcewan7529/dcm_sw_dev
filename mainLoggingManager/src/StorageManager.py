@@ -3,25 +3,22 @@ import shutil
 import psutil
 import time
 
-# ******* Functions ***********
-# Read data from temp directory
-def read_from_temp(temp_dir):
-    data_list = []
-    temp_files = os.listdir(temp_dir)
-    temp_files.sort(key=lambda x: os.path.getctime(os.path.join(temp_dir, x)), reverse=True)
-
-    for files in temp_files:
-        files_path = os.path.join(temp_dir, files)
-        with open(files_path, 'r') as file:
-            data = file.read()
-            data_list.append((files, data))
-
-    return data_list
-# ****************************
-
-temp_directory_path = "/tmp"
 storage_directory = "/media/files"
-read_data = read_from_temp(temp_directory_path)
+
+# Read data from tmp directory
+tmp_path = "/tmp"
+
+for files in os.listdir(tmp_path):
+    file_path = os.path.join(tmp_path, files)
+
+    if os.path.isfile(file_path) and files.endswith(".json"):
+        print(files)
+        with open(file_path, 'r') as file:
+            read_data = file.read()
+            print(read_data)
+
+    else:
+        print("File not found")
 
 # Check if device is plugged
 # If no device detected, wait 30 seconds then try again
