@@ -3,6 +3,7 @@
 # Update and install essential tools
 sudo apt update
 sudo apt install -y git python3-pip rabbitmq-server
+sudo apt-get install libopenjp2-7-dev -y
 
 # Start and set up RabbitMQ
 sudo systemctl start rabbitmq-server
@@ -58,5 +59,16 @@ rabbitmqadmin declare exchange name=DCM_Main_Exchange type=fanout durable=true
 
 # Cleanup by removing cloned repo
 rm -rf $CLONE_PATH
+
+# Enable SPI
+# Check if SPI0 is enabled, if not, enable it
+if ! grep -q "^dtparam=spi=on" /boot/config.txt; then
+    echo "dtparam=spi=on" | sudo tee -a /boot/config.txt > /dev/null
+fi
+
+# Check if SPI1 is enabled, if not, enable it
+if ! grep -q "^dtoverlay=spi1-3cs" /boot/config.txt; then
+    echo "dtoverlay=spi1-3cs" | sudo tee -a /boot/config.txt > /dev/null
+fi
 
 echo "Setup completed."
