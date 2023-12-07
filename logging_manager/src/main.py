@@ -1,14 +1,18 @@
+# Library imports
 import requests
 import time
 import glob
 import os
 
-# Call StorageManager
-exec(open("StorageManager.py").read())
+# Subtask imports
+from StorageManager import storage_manager_main
+from WiFiUploader import wifi_uploader_main
+
+# Run StorageManager
+storage_result = storage_manager_main()
 
 # Check if acknowledgment is received from StorageManager
-if "done" in globals():
-    storage_done = True
+storage_done = storage_result == "done"
 
 # Check for Wi-Fi connection
 while True:
@@ -17,29 +21,25 @@ while True:
         response = requests.get("http://www.google.com", timeout=5)
         response.raise_for_status()
 
-        # Call WiFiUploader
-        exec(open("WiFiUploader.py").read())
+        # Run WiFi Uploader
+        wifi_result = wifi_uploader_main()
 
         # Check if acknowledgment is received from WiFiUploader
-        if "done" in globals():
-            wifi_done = True
-
+        wifi_done = wifi_result == "done"
         break
 
     # Not connected:
     except requests.RequestException:
         time.sleep(5)
 
-# Check if acknowledgment is received from both
-if storage_done and wifi_done:
-    # Delete file from tmp
-    json_files_temp = glob.glob("/tmp/*.json")
-    for file in json_files_temp:
+if __name__ == "__main__":
+    if storage_done and wifi_done:
+        # Delete file from tmp
+        json_files_temp = glob.glob("/tmp/*.json")
+        for file in json_files_temp:
 
-        # Sort the files with last added at the top
-        sorted_json = sorted(json_files_temp, key=lambda x: os.path.getctime(x), reverse=True)
-
-        os.remove(sorted_json(0))
-
-else:
-    time.sleep(5)
+            # Sort the files with last added at the top
+            sorted_json = sorted(json_files_temp, key=lambda x: os.path.getctime(x), reverse=True)
+            os.remove(sorted_json(0))
+    else:
+        time.sleep(5)
