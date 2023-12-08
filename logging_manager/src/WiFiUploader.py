@@ -4,7 +4,7 @@ import json
 import requests
 
 WIFI_FILEPATH = "/tmp/wifi_uploads/*.json"
-UPLOAD_URL = "https://hnoi.netlify.app/"
+UPLOAD_URL = "https://hnoi-api.onrender.com/api/vehicleData/uploadManyData"
 
 def wifi_uploader_main():
     # Get JSON files to be uploaded
@@ -27,8 +27,8 @@ def wifi_uploader_main():
         print(f"Data from latest json: {payload}")
 
         try:
-            send_data = requests.post(UPLOAD_URL, data=payload)
-            print(send_data.statusCode)
+            send_data = requests.post(UPLOAD_URL, json=payload)
+            print(send_data.status_code)
 
         # Handling errors
         except requests.exceptions.ConnectionError as conerr:
