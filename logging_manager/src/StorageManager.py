@@ -2,58 +2,34 @@
 import os
 import shutil
 import psutil
-import time
+import glob
+
+MAX_STORAGE_USAGE = 30_000_000_000
+STORAGE_FILEPATH = "/tmp/storage_uploads/*.json"
 
 def storage_manager_main():
-    storage_directory = "/media/files"
+    storage_directory = "/media"
 
-    # Read data from tmp directory
-    tmp_path = "/tmp"
+    # If nothings plugged in, return false
+    if not os.path.exists(storage_directory):
+        return False
 
-    for files in os.listdir(tmp_path):
-        file_path = os.path.join(tmp_path, files)
+    json_files_temp = glob.glob(STORAGE_FILEPATH)
 
-        if os.path.isfile(file_path) and files.endswith(".json"):
-            print(files)
-            with open(file_path, 'r') as file:
-                read_data = file.read()
-                print(read_data)
+    # If no files in /tmp, return false
+    if not json_files_temp:
+        return False
 
-        else:
-            print("File not found")
-
-    # Check if device is plugged
-    # If no device detected, wait 30 seconds then try again
-    while not os.path.exists(storage_directory):
-        print("Storage not connected")
-        time.sleep(30)
-
-        # If storage is detected
-        print("Storage connected")
-
-        # If there is enough storage
+    for file_path in json_files_temp:
+        # If storage is out
         storage_usage = psutil.disk_usage(storage_directory)
-        if storage_usage.used < 30000000000:
-            print("There is enough storage")
-
-            # Copy top most file into external storage
-            last_created_file, last_created_data = read_data[0]
-            shutil.copy(os.path.join(tmp_path, last_created_file), storage_directory)
-
-        # Else if storage is out
-        else:
-            print("Not enough storage")
-
+        if storage_usage.used > MAX_STORAGE_USAGE:
             # Delete oldest created file
-            first_created_file, first_created_data = read_data[-1]
-            first_file_path = os.path.join(tmp_path, first_created_file)
-            os.remove(first_file_path)
+            json_files_media = glob.glob("/media/*.json")
+            # Sort the files with first added at the top
+            sorted_json = sorted(json_files_media, key=lambda x: os.path.getctime(x), reverse=False)
+            os.remove(sorted_json[0])
 
-            # Go back to while loop
-            break
+        shutil.copy(file_path, storage_directory)
 
-    # Else if unplugged
-    else:
-        print("Storage not connected")
-
-    return "done"
+    return True
