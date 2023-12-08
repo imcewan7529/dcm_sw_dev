@@ -3,56 +3,69 @@ import time
 from datetime import datetime
 import json
 import os
+import pika
 
 # ----------- Add back lines 15,16,58 ------------ for final implementation ---------------
 
-WIFI_FILEPATH = '/tmp/wifi_uploads/'
-STORAGE_FILEPATH = '/tmp/storage_uploads/'
+WIFI_DIR_PATH = '/tmp/wifi_uploads/'
+STORAGE_DIR_PATH = '/tmp/storage_uploads/'
+
+def setup():
+    # Check if WIFI_DIR_PATH exists, if not, create it
+    if not os.path.exists(WIFI_DIR_PATH):
+        os.makedirs(WIFI_DIR_PATH)
+
+    # Check if STORAGE_DIR_PATH exists, if not, create it
+    if not os.path.exists(STORAGE_DIR_PATH):
+        os.makedirs(STORAGE_DIR_PATH)
+
+def callback(ch, method, properties, body, messages, max_messages):
+    # Convert message body from bytes to a dictionary
+    message = json.loads(body)
+    
+    # Append message to the messages dictionary
+    messages.append(message)
+
+    # Check if we have reached 300 messages
+    if len(messages) >= max_messages:
+        ch.stop_consuming()
+
+def listen_for_messages():
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+
+    exchange_name = 'DCM_Main_Exchange'
+    result = channel.queue_declare(queue='', exclusive=True)
+    queue_name = result.method.queue
+
+    channel.queue_bind(exchange=exchange_name, queue=queue_name)
+
+    messages = []  # List to store the messages
+    max_messages = 10
+
+    # The lambda function allows us to pass extra arguments to callback
+    on_message_callback = lambda ch, method, properties, body: callback(ch, method, properties, body, messages, max_messages)
+    channel.basic_consume(queue=queue_name, on_message_callback=on_message_callback, auto_ack=True)
+
+    channel.start_consuming()
+
+    # Return the messages after consuming is finished
+    return messages
 
 def json_assembler_main():
+    while True:
+        setup()
+        messages = listen_for_messages()
 
-    # Creating directories in tmp
-    #os.makedirs(STORAGE_FILEPATH)
-    #os.makedirs(WIFI_FILEPATH)
+        # Get current date and time for the filename
+        current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    # Needs to be replaced with data from adc_manager
-    data_received = {"fuel_level": 100.00}
+        # File names with date and time
+        wifi_file_path = os.path.join(WIFI_DIR_PATH, f"hydrogen_sensor_log_{current_datetime}.json")
+        storage_file_path = os.path.join(STORAGE_DIR_PATH, f"hydrogen_sensor_log_{current_datetime}.json")
 
-    try:
-        data_json = json.dumps(data_received)
-        data_dict = json.loads(data_json)
-        print(f"Data as a dictionary: {data_dict}")
-
-    except json.JSONDecodeError as e:
-        print("Failed to parse as JSON")
-        return False
-
-    else:
-        print("Successfully parsed as JSON")
-
-    # Write as a file
-    try:
-        current_time = datetime.now().strftime("%m_%d_%Y_%H:%M:%S")
-        new_file_storage = os.path.join(STORAGE_FILEPATH, f'{current_time}.json')
-        new_file_wifi = os.path.join(WIFI_FILEPATH, f'{current_time}.json')
-        print("Temporary Directory:", new_file_storage)
-
-        with open(new_file_storage, 'w') as json_file_storage:
-            json.dump(data_received, json_file_storage)
-
-        with open(new_file_wifi, 'w') as json_file_wifi:
-            json.dump(data_received, json_file_wifi)
-
-    except PermissionError:
-        print("Does not have permission to access file")
-
-    except FileNotFoundError:
-        print("File not found")
-
-    except Exception as e:
-        print(f"Error writing to JSON file: {str(e)}")
-
-    else:
-        print("Successfully written JSON file")
-        #time.sleep(30)
-    return True
+        # Write messages to files in both directories
+        for file_path in [wifi_file_path, storage_file_path]:
+            with open(file_path, 'w') as file:
+                json.dump(messages, file)
+    

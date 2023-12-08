@@ -48,8 +48,9 @@ def main():
 
         # Formats data to JSON
         fields = {
-            "Date/Time": now.isoformat(),
-            "Flow_Rate": flow_rate
+            "vehicleID": "HARDWARE_TEMO_DEMO_TEST",
+            "flowrate": flow_rate,
+            "time": now.isoformat()
         }
         json_data = json.dumps(fields)
 
