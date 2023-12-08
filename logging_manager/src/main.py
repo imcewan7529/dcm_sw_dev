@@ -20,9 +20,11 @@ def cleanup(filepath):
 def main():
     while True:
         if json_assembler_main():
+            print("Starting storage_manager")       # For testing only
             if storage_manager_main():
                 cleanup(STORAGE_FILEPATH)
 
+            print("Starting wifi_uploader")       # For testing only
             if wifi_uploader_main():
                 cleanup(WIFI_FILEPATH)
 
