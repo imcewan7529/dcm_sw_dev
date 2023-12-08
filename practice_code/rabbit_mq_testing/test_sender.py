@@ -3,7 +3,7 @@
 import pika
 
 def send_message(message):
-    connection = pika.BlockingConnection(pika.ConnectionParameters('hostname'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
 
     exchange_name = 'DCM_Main_Exchange'
