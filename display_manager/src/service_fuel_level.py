@@ -72,7 +72,7 @@ def parse_flow_rate(message_string):
         message_dict = json.loads(message_string)        
 
         # Extract the flow rate value
-        flow_rate = message_dict.get('Flow_Rate', None)
+        flow_rate = message_dict.get('flowrate', None)
 
         # Return the flow rate if it exists, otherwise return None
         return float(flow_rate)

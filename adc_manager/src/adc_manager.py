@@ -50,7 +50,8 @@ def main():
         fields = {
             "vehicleID": "HARDWARE_TEMO_DEMO_TEST",
             "flowrate": flow_rate,
-            "time": now.isoformat()
+            "time": now.isoformat(),
+            "hydrogenFuel": True
         }
         json_data = json.dumps(fields)
 
