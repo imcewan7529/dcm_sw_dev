@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from lowpass_filter import Lowpass_Filter
 
 import json
-import plotext
+#import plotext
 import pika
 import time
 
@@ -40,8 +40,8 @@ def main():
             flow_rate = 2*filtered_value
 
             # 
-            raw_data.append(value)
-            filtered_data.append(filtered_value)
+            #raw_data.append(value)
+            #filtered_data.append(filtered_value)
             
             # Formats data to JSON
             fields = {
@@ -60,10 +60,10 @@ def main():
             # Delaysample
             time.sleep(-(time.time() - t0)% .1)        
     except KeyboardInterrupt:
-        plotext.plot(raw_data, color= "blue")
-        plotext.plot(filtered_data, color= "red")
-        plotext.title("Digital Filter")
-        plotext.show()
+        #plotext.plot(raw_data, color= "blue")
+        #plotext.plot(filtered_data, color= "red")
+        #plotext.title("Digital Filter")
+        #plotext.show()
         connection.close()
 
 if __name__ == "__main__":
