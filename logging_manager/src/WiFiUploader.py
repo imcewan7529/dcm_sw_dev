@@ -30,8 +30,12 @@ def wifi_uploader_main():
     # Get all files from /tmp/wifi_uploads ending with .json
     json_files_temp = glob.glob(WIFI_FILEPATH)
     for file_path in json_files_temp:
-        with open(file_path, "r")as file:
-            payload = json.load(file)
+        try: 
+            with open(file_path, "r")as file:
+                payload = json.load(file)
+        except FileNotFoundError:
+            print("File not found")
+            continue
 
         # print(f"Data from latest json: {payload}")
 
