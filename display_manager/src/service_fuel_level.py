@@ -5,6 +5,7 @@ import json
 from functools import partial
 import os
 import sys
+import RPi.GPIO as GPIO
 
 # Global variables
 FLOW_RATE_DATA_POINTS = 0
@@ -15,6 +16,13 @@ script_directory = os.path.dirname(os.path.abspath(sys.argv[0]))
 FUEL_REMAINING_FILENAME = os.path.join(script_directory, 'fuel_remaining.txt')
 # File I/O lock
 FUEL_REMAINING_FILE_LOCK = threading.Lock()
+
+stop_fuel_level_service = threading.Event()
+
+def gpio_callback(channel):
+    global stop_fuel_level_service
+    # Signal the json_assembler_main to stop
+    stop_fuel_level_service.set()
 
 # Helper functions to deal with file I/O
 def get_stored_fuel_remaining():
@@ -105,7 +113,13 @@ def service_fuel_level_main(queue_tx, queue_rx):
     # Start the message listener
     queue_tx.put(int(round(get_stored_fuel_remaining())))
     message_listener(queue_tx)
-    while 1:
+    # GPIO setup
+    GPIO.setmode(GPIO.BCM)  # Use Broadcom SOC channel numbers
+    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Set GPIO2 as input with pull-down resistor
+
+    # Add event detection for GPIO2 going high
+    GPIO.add_event_detect(2, GPIO.RISING, callback=gpio_callback, bouncetime=200)
+    while not stop_fuel_level_service.is_set():
         sleep(1) # sleep for 1s
         # If fuel level reset was requested
         if not queue_rx.empty():
