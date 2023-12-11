@@ -64,7 +64,7 @@ def main():
         plotext.plot(filtered_data, color= "red")
         plotext.title("Digital Filter")
         plotext.show()
-        connection.close(
+        connection.close()
 
 if __name__ == "__main__":
     main()
