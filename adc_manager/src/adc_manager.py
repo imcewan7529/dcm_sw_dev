@@ -59,11 +59,11 @@ def main():
             print("Date: %s | Voltage: %.4f"%  (now , filtered_value) )
             # Delaysample
             time.sleep(-(time.time() - t0)% .1)        
-   except KeyboardInterrupt:
-        plt.plot(raw_data, color= "blue")
-        plt.plot(filtere_data, color= "red")
-        plt.title("Digital Filter")
-        plt.show()
+    except KeyboardInterrupt:
+        plotext.plot(raw_data, color= "blue")
+        plotext.plot(filtere_data, color= "red")
+        plotext.title("Digital Filter")
+        plotext.show()
         connection.close(
 
 if __name__ == "__main__":
