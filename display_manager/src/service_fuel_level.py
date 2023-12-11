@@ -115,10 +115,10 @@ def service_fuel_level_main(queue_tx, queue_rx):
     message_listener(queue_tx)
     # GPIO setup
     GPIO.setmode(GPIO.BCM)  # Use Broadcom SOC channel numbers
-    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Set GPIO2 as input with pull-down resistor
+    GPIO.setup(2, GPIO.IN)  # Set GPIO2 as input with pull-down resistor
 
-    # Add event detection for GPIO2 going high
-    GPIO.add_event_detect(2, GPIO.RISING, callback=gpio_callback, bouncetime=200)
+    # Add event detection for GPIO2 going low
+    GPIO.add_event_detect(2, GPIO.FALLING, callback=gpio_callback, bouncetime=200)
     while not stop_fuel_level_service.is_set():
         sleep(1) # sleep for 1s
         # If fuel level reset was requested

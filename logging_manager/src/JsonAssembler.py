@@ -65,10 +65,10 @@ def listen_for_messages():
 def json_assembler_main():
     # GPIO setup
     GPIO.setmode(GPIO.BCM)  # Use Broadcom SOC channel numbers
-    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Set GPIO2 as input with pull-down resistor
+    GPIO.setup(2, GPIO.IN)  # Set GPIO2 as input with pull-down resistor
 
-    # Add event detection for GPIO2 going high
-    GPIO.add_event_detect(2, GPIO.RISING, callback=gpio_callback, bouncetime=200)
+    # Add event detection for GPIO2 going low
+    GPIO.add_event_detect(2, GPIO.FALLING, callback=gpio_callback, bouncetime=200)
     while True:
         setup()
         messages = listen_for_messages()
