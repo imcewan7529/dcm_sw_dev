@@ -61,7 +61,7 @@ def main():
             time.sleep(-(time.time() - t0)% .1)        
     except KeyboardInterrupt:
         plotext.plot(raw_data, color= "blue")
-        plotext.plot(filtere_data, color= "red")
+        plotext.plot(filtered_data, color= "red")
         plotext.title("Digital Filter")
         plotext.show()
         connection.close(
