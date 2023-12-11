@@ -4,11 +4,21 @@ from datetime import datetime
 import json
 import os
 import pika
+import threading
+import RPi.GPIO as GPIO
 
 # ----------- Add back lines 15,16,58 ------------ for final implementation ---------------
 
 WIFI_DIR_PATH = '/tmp/wifi_uploads/'
 STORAGE_DIR_PATH = '/tmp/storage_uploads/'
+
+# Global variable to signal json_assembler to stop
+stop_json_assembler = threading.Event()
+
+def gpio_callback(channel):
+    global stop_json_assembler
+    # Signal the json_assembler_main to stop
+    stop_json_assembler.set()
 
 def setup():
     # Check if WIFI_DIR_PATH exists, if not, create it
@@ -27,7 +37,7 @@ def callback(ch, method, properties, body, messages, max_messages):
     messages.append(message)
 
     # Check if we have reached 300 messages
-    if len(messages) >= max_messages:
+    if len(messages) >= max_messages or stop_json_assembler.is_set():
         ch.stop_consuming()
 
 def listen_for_messages():
@@ -41,7 +51,7 @@ def listen_for_messages():
     channel.queue_bind(exchange=exchange_name, queue=queue_name)
 
     messages = []  # List to store the messages
-    max_messages = 10
+    max_messages = 300
 
     # The lambda function allows us to pass extra arguments to callback
     on_message_callback = lambda ch, method, properties, body: callback(ch, method, properties, body, messages, max_messages)
@@ -53,6 +63,12 @@ def listen_for_messages():
     return messages
 
 def json_assembler_main():
+    # GPIO setup
+    GPIO.setmode(GPIO.BCM)  # Use Broadcom SOC channel numbers
+    GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Set GPIO2 as input with pull-down resistor
+
+    # Add event detection for GPIO2 going high
+    GPIO.add_event_detect(2, GPIO.RISING, callback=gpio_callback, bouncetime=200)
     while True:
         setup()
         messages = listen_for_messages()
@@ -68,4 +84,6 @@ def json_assembler_main():
         for file_path in [wifi_file_path, storage_file_path]:
             with open(file_path, 'w') as file:
                 json.dump(messages, file)
+        if stop_json_assembler.is_set():
+            break
     
