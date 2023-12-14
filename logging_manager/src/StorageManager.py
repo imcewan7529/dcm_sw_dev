@@ -47,10 +47,9 @@ def find_usb_device_path():
         for device in devices['blockdevices']:
             # Check if device is removable
             if device.get('rm', False) == True:
-                # Assuming the second partition (usually the storage partition)
-                # Adjust the index to 1 to target 'sda2' instead of 'sda1'
-                if device['children'] and len(device['children']) > 1:
-                    device_path = '/dev/' + device['children'][1]['name']
+                # Adjust the index to 0 to target 'sda1'
+                if device['children'] and len(device['children']) > 0:
+                    device_path = '/dev/' + device['children'][0]['name']
                     return device_path
         return None
     except subprocess.CalledProcessError as e:
